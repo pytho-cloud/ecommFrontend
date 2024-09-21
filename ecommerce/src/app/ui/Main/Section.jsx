@@ -3,30 +3,30 @@
 
 
 const Section = async () => {
-  
+
 
 
     // Function to fetch products and log them
     const fetchProducts = async () => {
-     
+
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/products/");
+            const response = await fetch("http://127.0.0.1:8000/api/products-home/");
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            console.log(data,'pppppppppppppppppp');
+            console.log(data, 'pppppppppppppppppp');
             return data.products
         } catch (error) {
-           
+
             console.error('Fetch error:', error); // Log the error to the console
         } finally {
-           
+
         }
     };
 
-    const responseData  = await fetchProducts();
-    console.log(responseData,'[[[[[[[[[[[[')
+    const responseData = await fetchProducts();
+    console.log(responseData, '[[[[[[[[[[[[')
     return (
         <>
             <div className="container mx-auto flex flex-col items-center gap-8">
@@ -35,8 +35,8 @@ const Section = async () => {
                 </h1>
 
                 <div className="container mx-auto flex flex-wrap gap-4">
-                {responseData?.map((product) => (
-                        <div key={product._id} className="max-w-sm rounded overflow-hidden shadow-lg ease-in-out duration-300 hover:opacity-75 hover:p-1">
+                    {responseData?.map((product) => (
+                        <div key={product._id} className="max-w-sm rounded  mx-auto overflow-hidden shadow-lg ease-in-out duration-300 hover:opacity-75 hover:p-1">
                             <img className="w-full" src={product.image_url} alt={product.product_name} />
                             <div className="px-6 py-4">
                                 <div className="font-bold text-xl mb-2">{product.product_price}</div>
@@ -51,8 +51,8 @@ const Section = async () => {
                             </div>
                         </div>
                     ))}
-                
-                    
+
+
                 </div>
             </div>
 

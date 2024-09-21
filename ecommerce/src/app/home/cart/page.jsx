@@ -7,14 +7,19 @@ const CartPage = () => {
     { id: 2, name: 'Item 2', price: 15, quantity: 1, img: '/product2.jpg' },
   ];
 
+  // Update cartItemsCount to reflect the actual number of items in the cart
+  const cartItemsCount = cartItems.length;
+
   const calculateTotal = () =>
     cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Your Cart</h1>
-      {cartItems.length > 0 ? (
+      {cartItemsCount === 0 ? (
+        <h1 className="text-2xl font-bold mb-6">Cart is Empty</h1>
+      ) : (
         <div>
+          <h1 className="text-2xl font-bold mb-6">Your Cart</h1>
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr>
@@ -22,13 +27,13 @@ const CartPage = () => {
                 <th className="py-2 text-center">Product</th>
                 <th className="py-2 text-center">Quantity</th>
                 <th className="py-2 text-center">Price</th>
-                <th className="py-2 text-center" >Total</th>
+                <th className="py-2 text-center">Total</th>
               </tr>
             </thead>
             <tbody>
               {cartItems.map((item) => (
                 <tr key={item.id} className="border-t border-gray-300">
-                  <td className="py-4 px-6 text-center ">
+                  <td className="py-4 px-6 text-center">
                     <img 
                       src={item.img}
                       alt={item.name}
@@ -47,13 +52,14 @@ const CartPage = () => {
             <p className="text-xl font-bold">
               Total: ${calculateTotal()}
             </p>
+            <button className="bg-blue-500 text-white py-2 px-4 rounded mt-4 mr-2">
+              Save Cart List 
+            </button>
             <button className="bg-blue-500 text-white py-2 px-4 rounded mt-4">
               Checkout
             </button>
           </div>
         </div>
-      ) : (
-        <p>Your cart is empty.</p>
       )}
     </div>
   );

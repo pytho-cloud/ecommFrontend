@@ -26,13 +26,13 @@ const Product = ({ children }) => {
             setFilteredBrands(data.brands[0]?.brands || []);
 
             console.log("Brands:", data.brands[0]?.brands);
-            console.log("productData:", productData);
+      
         } catch (error) {
             console.error('Error occurred:', error);
         }
     };
     useEffect(() => {
-        fetchAndSetData(selectedCategory === 'All' ? null : selectedCategory);
+        fetchAndSetData(selectedCategory === 'All' ? null : selectedCategory); 
 
     }, [selectedCategory]);
 
@@ -134,6 +134,8 @@ const Product = ({ children }) => {
         });
     };
 
+
+    { /* Add Cart Function */}
     return (
         <div className='flex flex-col   '>
             <div className="p-5 bg-gray-200 text-2xl  font-bold">

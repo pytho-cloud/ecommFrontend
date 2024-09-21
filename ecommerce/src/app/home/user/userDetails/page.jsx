@@ -1,134 +1,195 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
+import { fetchUserDetails, postUserDetails } from "./userdata";
 
 export default function UserDetail() {
-  // Define state variables for form inputs
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: ''
-  });
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [isForm, setIsForm] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        alternate_phone: "",
+    });
+    const [addressFormData, setAddressFormData] = useState([]);
+    const [newAddressData, setNewAddressData] = useState({
+        address: "",
+        city: "",
+        pincode: "",
+    });
 
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
+    useEffect(() => {
+        getUserData();
+    }, []);
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission (e.g., send data to an API or update state)
-    console.log(formData);
-  };
+    const getUserData = async () => {
+        const data = await fetchUserDetails("inverse", "inverse@gmail.com");
+        console.log("This is data from the API:", data);
 
-  return (
-    <div className='container m-auto flex flex-wrap gap-2 flex-col'>
-      <div className="container flex p-2">
-      <div className='mt-2  container'>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl ">Name</label>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 ">Inverse</label>
+        if (data && data.data) {
+            setFormData({
+                name: data.data.username,
+                email: data.data.email,
+                phone: data.data.phone || "",
+                alternate_phone: data.data.alternate_phone || "",
+            });
 
-      </div>
-      <div className='mt-2  container'>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl ">Email</label>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 ">inverse@gmail.com</label>
+            if (data.data.addresses) {
+                setAddressFormData(data.data.addresses);
+            }
+        }
+    };
 
-      </div>
+    const handleButtonClick = () => {
+        if (isEditingName) {
+            handleSubmitUserDetails();
+        } else {
+            setIsEditingName(true);
+        }
+    };
 
-      </div>
-    
-      <div className='mt-2  flex p-2'>
-        <div className="container">
-        <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Phone</label>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 ">9167208204</label>
+    const handleSubmitUserDetails = async () => {
+        await postUserDetails(formData.name, formData.email, formData.phone, formData.alternate_phone);
+        getUserData(); // Refresh user data after updating
+        setIsEditingName(false); // Exit editing mode after saving
+    };
+
+    const handleAddAddress = () => {
+        setAddressFormData((prevAddresses) => [...prevAddresses, newAddressData]);
+        setNewAddressData({
+            address: "",
+            city: "",
+            pincode: "",
+        });
+        setIsForm(false);
+    };
+
+    const handleNewAddressChange = (e) => {
+        const { name, value } = e.target;
+        setNewAddressData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    return (
+        <div className="container m-auto flex flex-wrap gap-2 flex-col">
+            <div className="container flex p-2">
+                <div className="mt-2 container">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Name</label>
+                    {isEditingName ? (
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="p-2 m-1 border border-gray-300"
+                        />
+                    ) : (
+                        <label className="block text-sm font-medium text-gray-700">{formData.name}</label>
+                    )}
+                </div>
+                <div className="mt-2 container">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Email</label>
+                    <label className="block text-sm font-medium text-gray-700">{formData.email}</label>
+                </div>
+            </div>
+            <div className="mt-2 flex p-2">
+                <div className="container">
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Phone</label>
+                    {isEditingName ? (
+                        <input
+                            type="text"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="p-2 m-1 border border-gray-300"
+                        />
+                    ) : (
+                        <label className="block text-sm font-medium text-gray-700">{formData.phone}</label>
+                    )}
+                </div>
+                <div className="container">
+                    <label htmlFor="alternate_phone" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Alternate Number</label>
+                    {isEditingName ? (
+                        <input
+                            type="text"
+                            name="alternate_phone"
+                            value={formData.alternate_phone}
+                            onChange={handleChange}
+                            className="p-2 m-1 border border-gray-300"
+                        />
+                    ) : (
+                        <label className="block text-sm font-medium text-gray-700">{formData.alternate_phone}</label>
+                    )}
+                </div>
+            </div>
+            <input
+                type="button"
+                value={isEditingName ? "Save" : "Edit"}
+                onClick={handleButtonClick}
+                className="ml-2 p-2 bg-blue-500 text-white rounded w-20 m-3 ml-3"
+            />
+            <div className="mt-4">
+                <div className="inputs flex justify-end mr-2">
+                    <div className="container">
+                        {isForm && (
+                            <div className="container mt-2 flex gap-1">
+                                <label htmlFor="address" className="text-sm text-gray-400 pt-2 ml-3 text-center mt-2">Address</label>
+                                <input
+                                    type="text"
+                                    name="address"
+                                    value={newAddressData.address}
+                                    onChange={handleNewAddressChange}
+                                    className="p-2 m-1 border border-gray-300"
+                                />
+                                <label htmlFor="city" className="text-sm text-gray-400 pt-2 ml-3 text-center mt-2">City/Town</label>
+                                <input
+                                    type="text"
+                                    name="city"
+                                    value={newAddressData.city}
+                                    onChange={handleNewAddressChange}
+                                    className="p-2 m-1 border border-gray-300"
+                                />
+                                <label htmlFor="pincode" className="text-sm text-gray-400 pt-2 ml-3 text-center mt-2">Pincode</label>
+                                <input
+                                    type="text"
+                                    name="pincode"
+                                    value={newAddressData.pincode}
+                                    onChange={handleNewAddressChange}
+                                    className="p-2 m-1 border border-gray-300"
+                                />
+                            </div>
+                        )}
+                    </div>
+                    <input
+                        type="button"
+                        value={isForm ? "Save" : "New"}
+                        onClick={isForm ? handleAddAddress : () => setIsForm(!isForm)}
+                        className="ml-2 p-2 bg-blue-500 text-white rounded w-20 m-3 ml-3 flex"
+                    />
+                </div>
+                <h2 className="text-xl font-bold">Addresses</h2>
+                {addressFormData.length > 0 ? (
+                    addressFormData.map((address, index) => (
+                        <div key={index} className="mt-2 p-2 border rounded">
+                            <p>Address: {address.address}</p>
+                            <p>City/Town: {address.city}</p>
+                            <p>Pincode: {address.pincode}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No addresses added yet.</p>
+                )}
+            </div>
         </div>
-
-        <div className="container">
-        <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Alternate Number</label>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 ">9930761403</label>
-        </div>
-     
-
-      </div>
-      <div className='mt-2  w-4/5 p-2'>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Address</label>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 ">TT1/009 Kannamwar Nagar -2 Vikhorli east </label>
-
-      </div>
-      <div className='mt-2  w-4/5 p-2'>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-400 pt-2 text-xl">Address - 2</label>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 ">TT1/009 Kannamwar Nagar -2 Vikhorli east </label>
-
-      </div>
-
-    </div>
-    // <div className="p-6 max-w-2xl mx-auto bg-white rounded-lg shadow-md">
-    //   <h2 className="text-2xl font-bold mb-4">User Details</h2>
-    //   <form onSubmit={handleSubmit} className="space-y-4">
-    //     <div>
-    //       <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-    //       <input
-    //         type="text"
-    //         id="name"
-    //         name="name"
-    //         value={formData.name}
-    //         onChange={handleChange}
-    //         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    //         placeholder="John Doe"
-    //         required
-    //       />
-    //     </div>
-    //     <div>
-    //       <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
-    //       <input
-    //         type="tel"
-    //         id="phone"
-    //         name="phone"
-    //         value={formData.phone}
-    //         onChange={handleChange}
-    //         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    //         placeholder="123-456-7890"
-    //         required
-    //       />
-    //     </div>
-    //     <div>
-    //       <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-    //       <input
-    //         type="email"
-    //         id="email"
-    //         name="email"
-    //         value={formData.email}
-    //         onChange={handleChange}
-    //         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    //         placeholder="example@example.com"
-    //         required
-    //       />
-    //     </div>
-    //     <div>
-    //       <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
-    //       <textarea
-    //         id="address"
-    //         name="address"
-    //         value={formData.address}
-    //         onChange={handleChange}
-    //         rows="3"
-    //         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    //         placeholder="123 Main St, Anytown, USA"
-    //         required
-    //       ></textarea>
-    //     </div>
-    //     <button
-    //       type="submit"
-    //       className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-    //     >
-    //       Submit
-    //     </button>
-    //   </form>
-    // </div>
-  );
+    );
 }
