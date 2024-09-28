@@ -56,15 +56,38 @@ export const postUserDetails = async (username, email, phone, alternate_phone) =
 };
 
 
-export const postUserAddress = async () => {
+export const postUserAddress = async (address) => {
 
     try {
-        console.log("sss")
+        let addressUrl = `${BASE_URL}get_user_address/`;
+        const response = await fetch(addressUrl, {
+            method: 'POST',
+            headers: {
+                'Content-type': "application/json"
+            },
+            body: JSON.stringify({
+                email: localStorage.getItem("email"),
+                name : localStorage.getItem('name') ,
+                address: address.address +"," +  address.city  +"," + address.pincode
+            })
+
+        })
+        if (!response.ok) {
+            throw new Error('Failed to update user data');
+        }
+
+
+        const result = await response.json();
+        console.log("User data updated successfully:", result);
     } catch (error) {
 
         console.log('this is error ')
     }
 }
+
+
+
+
 
 export const fetchUserAddress = async (email) => {
     try {
@@ -84,5 +107,32 @@ export const fetchUserAddress = async (email) => {
         return data.data;
     } catch (error) {
         console.error('Fetch error:', error);
+    }
+};
+
+
+
+export const deleteUserAddress = async (id) => {
+    try {
+        const addressUrl = `${BASE_URL}get_user_address/`; // Dynamic URL with id
+        const response = await fetch(addressUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json',
+            },
+            body: JSON.stringify(
+                {
+                    email : localStorage.getItem('email'),
+                    id :id
+                }
+            ), // Body added to DELETE request
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete address');
+        }
+        console.log('Address deleted successfully');
+    } catch (error) {
+        console.error('Error deleting address:', error);
     }
 };

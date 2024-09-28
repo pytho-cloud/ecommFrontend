@@ -36,7 +36,7 @@ export default function Layout({ children }) {
             </li>
             <li>
               <Link href="allCart/" className="block py-2 px-4 hover:bg-gray-700 rounded">
-                All Cart
+                Wish List
               </Link>
             </li>
             <li>
