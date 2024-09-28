@@ -7,7 +7,7 @@ const Navbar = () => {
     const [user, setUser] = useState('');
 
     useEffect(() => {
-        const username = localStorage.getItem('username');
+        const username = localStorage.getItem('user');
         setUser(username);
     }, []);
     return (

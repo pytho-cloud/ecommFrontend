@@ -10,7 +10,7 @@ export default function Layout({ children }) {
   const [user, setUser] = useState('');
 
   useEffect(() => {
-      const username = localStorage.getItem('username');
+      const username = localStorage.getItem('user');
       setUser(username);
   }, []);
 

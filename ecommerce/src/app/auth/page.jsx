@@ -31,8 +31,10 @@ const Login = () => {
     
         const data = await loginApi(username,password)
         if (data.status === 200) {
-          localStorage.setItem('username', username);
-          setSuccess("Login Succesfull Redirecting ....")
+          
+          localStorage.setItem("user" , data.username)
+          localStorage.setItem("email" , data.email)
+          setSuccess("Login Succesfull Redirecting ....",data.email ,data.username)
           setError('');
 
           setTimeout(() => {
@@ -48,7 +50,7 @@ const Login = () => {
       }
     } else {
       setError('Email and password are required.');
-      setLoading(false); // Hide loading state if validation fails
+      setLoading(false); 
     }
   };
 

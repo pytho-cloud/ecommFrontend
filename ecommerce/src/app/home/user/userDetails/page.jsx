@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { fetchUserDetails, postUserDetails } from "./userdata";
+import { fetchUserAddress, fetchUserDetails, postUserDetails } from "./userdata";
 
 export default function UserDetail() {
     const [isEditingName, setIsEditingName] = useState(false);
@@ -22,8 +22,31 @@ export default function UserDetail() {
         getUserData();
     }, []);
 
+    useEffect(() => {
+        if (formData.email) {
+            getUserAddressData();
+        }
+    }, [formData.email]);
+    
+
+    const getUserAddressData = async () => {
+        try {
+
+            const addressData = await fetchUserAddress(formData.email);
+
+
+            if (Array.isArray(addressData)) {
+                setAddressFormData(addressData);
+            } else {
+                console.error("Invalid address data format", addressData);
+            }
+        } catch (error) {
+            console.error("Error fetching user addresses:", error);
+        }
+    };
+
     const getUserData = async () => {
-        const data = await fetchUserDetails("inverse", "inverse@gmail.com");
+        const data = await fetchUserDetails(localStorage.getItem("email"), localStorage.getItem('user'));
         console.log("This is data from the API:", data);
 
         if (data && data.data) {
@@ -178,7 +201,7 @@ export default function UserDetail() {
                     />
                 </div>
                 <h2 className="text-xl font-bold">Addresses</h2>
-                {addressFormData.length > 0 ? (
+                {addressFormData && addressFormData.length > 0 ? (
                     addressFormData.map((address, index) => (
                         <div key={index} className="mt-2 p-2 border rounded">
                             <p>Address: {address.address}</p>
@@ -189,6 +212,7 @@ export default function UserDetail() {
                 ) : (
                     <p>No addresses added yet.</p>
                 )}
+
             </div>
         </div>
     );
