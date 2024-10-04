@@ -13,12 +13,13 @@ const Product = ({ children }) => {
     const [maxPrice, setMaxPrice] = useState(1000);
     const [selectedBrands, setSelectedBrands] = useState(new Set());
     const [selectedColors, setSelectedColors] = useState(new Set());
+    const [cart, setCart] = useState([]);
 
 
     // Function to fetch and set data
     const fetchAndSetData = async (category = null) => {
         try {
-            console.log("this is my data" ,category)
+            console.log("this is my data", category)
             const data = await fetchProductsForProductPage(category);
             setProductData(data.products);
             setFilteredProducts(data.products)
@@ -26,13 +27,13 @@ const Product = ({ children }) => {
             setFilteredBrands(data.brands[0]?.brands || []);
 
             console.log("Brands:", data.brands[0]?.brands);
-      
+
         } catch (error) {
             console.error('Error occurred:', error);
         }
     };
     useEffect(() => {
-        fetchAndSetData(selectedCategory === 'All' ? null : selectedCategory); 
+        fetchAndSetData(selectedCategory === 'All' ? null : selectedCategory);
 
     }, [selectedCategory]);
 
@@ -91,10 +92,10 @@ const Product = ({ children }) => {
 
 
     const applyFilters = (query, minPrice, maxPrice, selectedBrands, selectedColors) => {
-       
+
         const brands = selectedBrands || new Set();
         const colors = selectedColors || new Set();
-    
+
         const filtered = productData.filter(product =>
             (product.product_name.toLowerCase().includes(query) ||
                 product.product_description.toLowerCase().includes(query)) &&
@@ -103,7 +104,7 @@ const Product = ({ children }) => {
             (brands.size === 0 || brands.has(product.brand)) &&
             (colors.size === 0 || colors.has(product.color))
         );
-    
+
         setFilteredProducts(filtered);
     };
     const onBrandChange = (brand) => {
@@ -135,7 +136,29 @@ const Product = ({ children }) => {
     };
 
 
-    { /* Add Cart Function */}
+    const addToCart = (item) => {
+        let existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+        const itemIndex = existingCart.findIndex(cartItem => cartItem._id === item._id);
+    
+        if (itemIndex > -1) {
+            
+            existingCart[itemIndex].quantity += 1;
+        } else {
+          
+            console.log('else is exute')
+            existingCart.push({ ...item, quantity: 1 });
+        }
+    
+        localStorage.setItem('cart', JSON.stringify(existingCart));
+
+        setCart(existingCart);
+    
+        console.log("Added to cart:", item);
+    };
+    
+   
+    { /* Add Cart Function */ }
     return (
         <div className='flex flex-col   '>
             <div className="p-5 bg-gray-200 text-2xl  font-bold">
@@ -323,7 +346,7 @@ const Product = ({ children }) => {
                                     <li className="w-full border-b-2 border-neutral-100 border-opacity-100 px-6 py-3 dark:border-white/10">
                                         ${item.product_price}
                                     </li>
-                                    <button className="w-full border-b-2 border-neutral-100 border-opacity-100 px-2 py-2 bg-blue-200 mr-2 mb-2 mt-2 rounded dark:border-white/10">
+                                    <button className="w-full border-b-2 border-neutral-100 border-opacity-100 px-2 py-2 bg-blue-200 mr-2 mb-2 mt-2 rounded dark:border-white/10" onClick={() => addToCart(item)}>
                                         Add to Cart
                                     </button>
                                 </ul>

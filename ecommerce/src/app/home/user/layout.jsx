@@ -17,6 +17,7 @@ export default function Layout({ children }) {
   const onLogoutSubmit = () => {
     setLoading(true); 
     setTimeout(() => {
+      localStorage.removeItem('cart'); 
       localStorage.removeItem('username'); 
       router.push('/auth'); 
     }, 1000); 
