@@ -32,11 +32,15 @@ export const saveCartList = async (cartItems, cartName) => {
 
 
 
-export const fetchAllWishList  = async (pk) => {
+export const fetchAllWishList = async (pk) => {
     try {
 
-        const response = await fetch(`${BASE_URL}add_user_wish_list/${pk}`);
-     
+        const response = await fetch(`${BASE_URL}delete_user_wish_list/${pk}`,{
+            method : "GET"
+        }
+            
+        );
+
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -44,8 +48,30 @@ export const fetchAllWishList  = async (pk) => {
         const data = await response.json();
         return data.data;
     } catch (error) {
-        console.error('Fetch error:', error); 
+        console.error('Fetch error:', error);
     }
 };
 
+
+export const deleteUserWishList = async (id) => {
+    try {
+        const addressUrl = `${BASE_URL}add_user_wish_list/${id}`;
+        const response = await fetch(addressUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json',
+            },
+
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete WishList');
+        }
+
+        return response
+        console.log('WishList Delete Successfuly ');
+    } catch (error) {
+        console.error('Error deleting address:', error);
+    }
+};
 
