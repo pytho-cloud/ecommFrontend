@@ -18,15 +18,12 @@ const CartPage = () => {
     cartItems.reduce((acc, item) => acc + item.product_price * item.quantity, 0);
 
   const handleIncrement = (id) => {
-
-    const updateCounts = cartItems.map((items) =>
-      items._id = id ? { ...items, quantity: items.quantity + 1 } : items
+    const updatedCartItems = cartItems.map(item =>
+      item._id === id ? { ...item, quantity: item.quantity + 1 } : item
     );
-    setCartItems(updateCounts);
-    console.group(updateCounts)
-    localStorage.setItem('cart', JSON.stringify(updateCounts));
-
-  }
+    setCartItems(updatedCartItems);
+    localStorage.setItem('cart', JSON.stringify(updatedCartItems));
+  };
 
   const handleDecrement = (id) => {
     const updatedCartItems = cartItems

@@ -35,7 +35,7 @@ export const saveCartList = async (cartItems, cartName) => {
 export const fetchAllWishList = async (pk) => {
     try {
 
-        const response = await fetch(`${BASE_URL}delete_user_wish_list/${pk}`,{
+        const response = await fetch(`${BASE_URL}add_user_wish_list/${pk}`,{
             method : "GET"
         }
             
@@ -75,3 +75,24 @@ export const deleteUserWishList = async (id) => {
     }
 };
 
+
+
+export const fetchCheckoutProductAndUser = async (pk) => {
+    try {
+
+        const response = await fetch(`${BASE_URL}user_checkout/${pk}`,{
+            method : "GET"
+        }
+            
+        );
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+};
